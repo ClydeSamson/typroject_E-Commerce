@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+{% block title %}Admin - Add Product{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .product-form {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        border-radius: 12px;
+        background: #fff;
+    }
+    .preview-container {
+        width: 200px;
+        height: 200px;
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .preview-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    .drop-zone {
+        border: 2px dashed #007bff;
+        background-color: #f8f9fa;
+    }
+    .price-input-group {
+        position: relative;
+    }
+    .price-input-group:before {
+        content: "₹";
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+    }
+    .price-input {
+        padding-left: 25px;
+    }
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+    .progress {
+        height: 3px;
+        margin-bottom: 1rem;
+    }
+    body {
+        background-color: #f5f5f5;
+    }
+    .remove-preview {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(255,255,255,0.9);
+        border-radius: 50%;
+        padding: 5px;
+        cursor: pointer;
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="product-form">
+        <h2 class="mb-4">Add New Product</h2>
+        
+        <div class="progress" role="progressbar">
+            <div class="progress-bar" style="width: 0%"></div>
+        </div>
+
+        <form id="productForm" method="POST" enctype="multipart/form-data">
+            {{ form.csrf_token }}
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        {{ form.pid(class="form-control", id="pid", placeholder="Product ID") }}
+                        {{ form.pid.label }}
+                        {% if form.pid.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.pid.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        {{ form.pname(class="form-control", id="pname", placeholder="Product Name") }}
+                        {{ form.pname.label }}
+                        {% if form.pname.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.pname.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        {{ form.description(class="form-control", id="description", placeholder="Description", style="height: 100px") }}
+                        {{ form.description.label }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        {{ form.category(class="form-select", id="category") }}
+                        {{ form.category.label }}
+                        {% if form.category.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.category.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        {{ form.size(class="form-select", id="size") }}
+                        {{ form.size.label }}
+                        {% if form.size.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.size.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        {{ form.price(class="form-control price-input", id="price", placeholder="Price") }}
+                        {{ form.price.label }}
+                        {% if form.price.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.price.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Product Image</label>
+                        {{ form.image(class="form-control", id="image", accept="image/*") }}
+                        {% if form.image.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.image.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="preview-container mt-3" id="dropZone">
+                            <img id="preview" class="preview-image d-none">
+                            <span id="dropText">Drag & Drop image here or click to upload</span>
+                            <span class="remove-preview" id="removePreview">
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-plus-circle me-2"></i>Add Product
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    const sizesMap = {
+        male: ['S', 'M', 'L', 'XL', 'XXL'],
+        female: ['XS', 'S', 'M', 'L', 'XL'],
+        kids: ['7', '8', '9']
+    };
+
+    // Form elements
+    const form = document.getElementById('productForm');
+    const category = document.getElementById('category');
+    const sizeSelect = document.getElementById('size');
+    const progressBar = document.querySelector('.progress-bar');
+    const dropZone = document.getElementById('dropZone');
+    const preview = document.getElementById('preview');
+    const dropText = document.getElementById('dropText');
+    const removePreview = document.getElementById('removePreview');
+    const imageInput = document.getElementById('image');
+
+    // Update progress bar based on form completion
+    function updateProgress() {
+        const inputs = form.querySelectorAll('input, select, textarea');
+        const totalInputs = inputs.length;
+        let filledInputs = 0;
+
+        inputs.forEach(input => {
+            if (input.value) filledInputs++;
+        });
+
+        const progress = (filledInputs / totalInputs) * 100;
+        progressBar.style.width = `${progress}%`;
+    }
+
+    // Update size options based on category
+    category.addEventListener('change', function() {
+        sizeSelect.innerHTML = '<option value="">Select Size</option>';
+        sizeSelect.disabled = !this.value;
+        
+        if (this.value) {
+            sizesMap[this.value].forEach(size => {
+                const option = document.createElement('option');
+                option.value = size;
+                option.textContent = size;
+                sizeSelect.appendChild(option);
+            });
+        }
+        updateProgress();
+    });
+
+    // Image preview and drag & drop functionality
+    function handleFiles(files) {
+        const file = files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.remove('d-none');
+                dropText.style.display = 'none';
+                removePreview.style.display = 'block';
+                imageInput.files = files;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drop-zone');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('drop-zone');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drop-zone');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    imageInput.addEventListener('change', function(e) {
+        handleFiles(e.target.files);
+    });
+
+    removePreview.addEventListener('click', function(e) {
+        e.stopPropagation();
+        preview.src = '';
+        preview.classList.add('d-none');
+        dropText.style.display = 'block';
+        removePreview.style.display = 'none';
+        imageInput.value = '';
+        updateProgress();
+    });
+
+    // Real-time form validation
+    form.addEventListener('input', function(e) {
+        const input = e.target;
+        if (input.checkValidity()) {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        } else {
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+        }
+        updateProgress();
+    });
+
+    // Initial field validation styling
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if form.errors %}
+            const inputFields = form.querySelectorAll('input, select, textarea');
+            inputFields.forEach(field => {
+                if (field.name in {{ form.errors|tojson }}) {
+                    field.classList.add('is-invalid');
+                }
+            });
+        {% endif %}
+        updateProgress();
+    });
+</script>
+{% endblock %}

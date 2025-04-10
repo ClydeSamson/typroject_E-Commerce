@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - E-commerce Admin</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-light">
+      <i class="bi bi-star-fill"></i> Urban Style
+    </div>
+
+    <nav class="nav flex-column">
+      <a class="nav-link active" href="{{ url_for('dashboard') }}"><i class="fas fa-home me-3"></i>Dashboard</a>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <!-- Top Bar -->
+    <div class="top-bar d-flex justify-content-between align-items-center">
+      <h1 class="h4 mb-0">Dashboard Overview</h1>
+      <div class="d-flex align-items-center">
+        <div class="dropdown me-3">
+          <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            <i class="fas fa-bell me-2"></i>
+            <span class="badge bg-danger">3</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">New Order #1234</a></li>
+            <li><a class="dropdown-item" href="#">Low Stock Alert</a></li>
+            <li><a class="dropdown-item" href="#">Customer Review</a></li>
+          </ul>
+        </div>
+        <img src="/api/placeholder/40/40" alt="Profile" class="rounded-circle">
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Quick Actions -->
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-header bg-transparent">
+            <h5 class="mb-0">Quick Actions</h5>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-3">
+              <button class="quick-action-btn btn btn-primary" onclick="window.location.href='{{ url_for('add_product') }}'">
+                <i class="fas fa-plus me-2"></i>Add New Product
+              </button>
+              <button class="quick-action-btn btn btn-danger" onclick="window.location.href='{{ url_for('remove_product') }}'">
+                <i class="fas fa-minus me-2"></i>Remove Product
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

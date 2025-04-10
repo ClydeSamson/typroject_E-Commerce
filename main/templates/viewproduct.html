@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product | Urban Style</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        /* Basic styling for the product page */
+        body {
+            padding-top: 70px;
+        }
+        .navbar {
+            background-color: #212529;
+        }
+        .product-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .product-main {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .product-gallery {
+            flex: 1;
+            min-width: 300px;
+        }
+        .product-info {
+            flex: 1;
+            min-width: 300px;
+        }
+        .main-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+        .product-title {
+            margin-bottom: 15px;
+        }
+        .product-gallery .product-title {
+            display: none;
+        }
+        .product-rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .stars {
+            color: gold;
+            margin-right: 10px;
+        }
+        .product-price {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 18px;
+            margin-left: 10px;
+        }
+        .discount-badge {
+            background-color: #ff4444;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .quantity-label {
+            margin-right: 10px;
+        }
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+        }
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: #f8f8f8;
+            cursor: pointer;
+        }
+        .quantity-input {
+            width: 50px;
+            height: 30px;
+            text-align: center;
+            border: 1px solid #ddd;
+            margin: 0 5px;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .btn-product {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-primary-product {
+            background-color: #007bff;
+            color: white;
+        }
+        .details-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .tab.active {
+            border-bottom: 2px solid #007bff;
+            font-weight: bold;
+        }
+        .specifications {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        .spec-item {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+        .spec-name {
+            font-weight: bold;
+            flex: 1;
+        }
+        .spec-value {
+            flex: 2;
+        }
+        .section-title {
+            margin: 30px 0 20px;
+        }
+        .product-carousel {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .product-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .card-content {
+            padding: 15px;
+        }
+        .card-title {
+            margin-bottom: 10px;
+        }
+        .card-price {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+        .add-to-cart {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-star-fill"></i> Urban Style
+            </a>
+            
+            <div class="d-flex ms-auto me-3" style="width: 400px;">
+                <form class="d-flex flex-grow-1">
+                    <input class="form-control me-2" type="search" placeholder="Search clothing">
+                    <button class="btn btn-light me-2" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+                <!-- Button to open filter sidebar -->
+                <button class="btn btn-outline-light" data-bs-toggle="offcanvas" data-bs-target="#filterSidebar">
+                    <i class="bi bi-funnel-fill"></i> Filter
+                </button>
+            </div>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house-door-fill me-1"></i>Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/cart"><i class="bi bi-cart-check-fill me-1"></i>Cart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about"><i class="bi bi-book-fill me-1"></i>AboutUs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/login"><i class="bi bi-person-fill me-1"></i>Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Filter Sidebar -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="filterSidebar" aria-labelledby="filterSidebarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="filterSidebarLabel">Filter Products</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="mb-4">
+                <h6 class="mb-3">Price Range</h6>
+                <div class="range">
+                    <input type="range" class="form-range" id="priceRange">
+                    <div class="d-flex justify-content-between">
+                        <span>$0</span>
+                        <span>$500</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <h6 class="mb-3">Categories</h6>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" value="" id="cat1">
+                    <label class="form-check-label" for="cat1">Headphones</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" value="" id="cat2">
+                    <label class="form-check-label" for="cat2">Speakers</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" value="" id="cat3">
+                    <label class="form-check-label" for="cat3">Earbuds</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" value="" id="cat4">
+                    <label class="form-check-label" for="cat4">Accessories</label>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <h6 class="mb-3">Brands</h6>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" value="" id="brand1">
+                    <label class="form-check-label" for="brand1">SoundMaster</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" value="" id="brand2">
+                    <label class="form-check-label" for="brand2">AudioTech</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" value="" id="brand3">
+                    <label class="form-check-label" for="brand3">BeatWave</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" value="" id="brand4">
+                    <label class="form-check-label" for="brand4">PureSound</label>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary w-100">Apply Filters</button>
+        </div>
+    </div>
+    
+    <main>
+        <div class="product-container">
+            <section class="product-main">
+                <div class="product-gallery">
+                    <img src="/static/images/{{ product[6] }}" alt="{{ product[1] }}" class="main-image">
+                        <h1 class="product-title">{{ product[1] }}</h1>
+                        <p>{{ product[2] }}</p>
+                </div>
+
+                <div class="product-info">
+                    <h1 class="product-title">{{ product[1] }}</h1>
+    
+                    <div class="product-rating">
+                        <div class="stars">★★★★☆</div>
+                        <span class="review-count">4.5 (128 reviews)</span>
+                    </div>
+    
+                    <div class="product-price">
+                        ₹{{ product[5] }}
+                        <!-- If you have original price and discount info in your database, use that here -->
+                    </div>
+    
+                    <p>{{ product[2] }}</p>
+    
+                <form action="/cart/add/{{ product[0] }}" method="post">
+                </div>
+                
+            </section>
+            
+            <section class="product-details">
+                <div class="details-tabs">
+                    <div class="tab active" data-tab="description">Description</div>
+                    <div class="tab" data-tab="specifications">Specifications</div>
+                    <div class="tab" data-tab="reviews">Reviews</div>
+                </div>
+                
+                <div class="tab-content" id="description-tab">
+                    <div class="description">
+                        <h3>Key Features:</h3>
+                        <ul>
+                            <li>Active Noise Cancellation technology</li>
+                            <li>30-hour battery life</li>
+                            <li>Premium sound quality with deep bass</li>
+                            <li>Comfortable over-ear design</li>
+                            <li>Fast charging - 5 hours of playback with just 10 minutes of charge</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="specifications-tab" style="display: none;">
+                    <div class="specifications">
+                        <div class="spec-item">
+                            <div class="spec-name">Connectivity</div>
+                            <div class="spec-value">Bluetooth 5.0, 3.5mm jack</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-name">Battery Life</div>
+                            <div class="spec-value">30 hours</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-name">Driver Size</div>
+                            <div class="spec-value">40mm</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-name">Weight</div>
+                            <div class="spec-value">250g</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-name">Charging</div>
+                            <div class="spec-value">USB-C</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="reviews-tab" style="display: none;">
+                    <div class="reviews">
+                        <p>Review content will be displayed here.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="upsell">
+                <h2 class="section-title">Upgrade Your Experience</h2>
+                <div class="product-carousel">
+                    <div class="product-card">
+                        <img src="/static/images/product2.jpg" alt="Premium Headphones" class="card-img">
+                        <div class="card-content">
+                            <h3 class="card-title">Premium Pro Headphones</h3>
+                            <div class="card-price">₹19999</div>
+                            <p>Professional-grade headphones with studio-quality sound.</p>
+                            <form action="/cart/add/2" method="post">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="add-to-cart">Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="/static/images/product3.jpg" alt="Wireless Earbuds" class="card-img">
+                        <div class="card-content">
+                            <h3 class="card-title">Wireless Earbuds</h3>
+                            <div class="card-price">₹8999</div>
+                            <p>Compact wireless earbuds with noise isolation.</p>
+                            <form action="/cart/add/3" method="post">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="add-to-cart">Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="cross-sell">
+                <h2 class="section-title">Frequently Bought Together</h2>
+                <div class="product-carousel">
+                    <div class="product-card">
+                        <img src="/static/images/product4.jpg" alt="Headphone Case" class="card-img">
+                        <div class="card-content">
+                            <h3 class="card-title">Hard Shell Headphone Case</h3>
+                            <div class="card-price">₹1499</div>
+                            <p>Protective case for your headphones.</p>
+                            <form action="/cart/add/4" method="post">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="add-to-cart">Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="/static/images/product5.jpg" alt="Headphone Stand" class="card-img">
+                        <div class="card-content">
+                            <h3 class="card-title">Headphone Stand</h3>
+                            <div class="card-price">₹999</div>
+                            <p>Elegant stand to display your headphones.</p>
+                            <form action="/cart/add/5" method="post">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="add-to-cart">Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- Bootstrap JS with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs and hide all contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.style.display = 'none');
+                    
+                    // Add active class to clicked tab and show corresponding content
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).style.display = 'block';
+                });
+            });
+            
+            // Quantity buttons functionality
+            const minusBtn = document.querySelector('.minus-btn');
+            const plusBtn = document.querySelector('.plus-btn');
+            const quantityInput = document.querySelector('.quantity-input');
+            
+            minusBtn.addEventListener('click', () => {
+                const currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+            });
+            
+            plusBtn.addEventListener('click', () => {
+                const currentValue = parseInt(quantityInput.value);
+                quantityInput.value = currentValue + 1;
+            });
+        });
+    </script>
+</body>
+</html>

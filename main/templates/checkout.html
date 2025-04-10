@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - TyProject</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.css') }}">
+</head>
+<body>
+    <div class="checkout-container">
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Delivery Address Section -->
+                <div class="section-box">
+                    <div class="section-header">
+                        <span class="section-number">1</span>
+                        <h5 class="mb-0">DELIVERY ADDRESS</h5>
+                    </div>
+
+                    <div class="form-section active" id="addressForm">
+                        <form class="row g-3" id="deliveryForm">
+                            <div class="col-12">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Street Address</label>
+                                <input type="text" class="form-control" id="street" name="street" placeholder="Street, House No., Building" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Landmark</label>
+                                <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Near...">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" name="state" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">PIN Code</label>
+                                <input type="text" class="form-control" id="pincode" name="pincode" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-gradient">SAVE AND DELIVER HERE</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="completed-section" id="addressCompleted">
+                        <div id="addressValue"></div>
+                        <button class="btn btn-link float-end" onclick="editAddress()">CHANGE</button>
+                    </div>
+                </div>
+
+                <!-- Order Summary Section -->
+                <div class="section-box">
+                    <div class="section-header">
+                        <span class="section-number">2</span>
+                        <h5 class="mb-0">ORDER SUMMARY</h5>
+                    </div>
+                    <div class="d-flex mb-3">
+                        <img src="{{ url_for('static', filename='img/placeholder.jpg') }}" alt="Product" class="product-img me-3" width="80" height="100">
+                        <div class="flex-grow-1">
+                            <h6>{{ product.name }}</h6>
+                            <p class="text-muted mb-1">Size: {{ product.size }}</p>
+                            <p class="text-muted mb-1">Seller: {{ product.seller }}</p>
+                            <div class="d-flex align-items-center">
+                                <strong>₹{{ product.price }}</strong>
+                                <span class="text-success ms-2">{{ product.discount }}% Off</span>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-link text-danger">REMOVE</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Options Section -->
+                <div class="section-box">
+                    <div class="section-header">
+                        <span class="section-number">3</span>
+                        <h5 class="mb-0">PAYMENT OPTIONS</h5>
+                    </div>
+                    <div class="timer">
+                        <i class="bi bi-clock"></i> Complete payment in {{ expiry_time }}
+                    </div>
+                    <div class="payment-options">
+                        <div class="payment-option">
+                            <input type="radio" name="payment" id="cod">
+                            <label for="cod" class="ms-2">Cash on Delivery</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Details Card -->
+            <div class="col-md-4">
+                <div class="section-box price-card">
+                    <h5 class="mb-4">PRICE DETAILS</h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Price (1 item)</span>
+                        <span>₹{{ product.price }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Delivery Charges</span>
+                        <span class="text-success">FREE</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Platform Fee</span>
+                        <span>₹{{ product.platform_fee }}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3 fw-bold">
+                        <span>Total Payable</span>
+                        <span>₹{{ total }}</span>
+                    </div>
+                    <div class="text-success">
+                        Your Total Savings on this order ₹{{ "%.2f"|format(savings) }}
+                    </div>
+                    <div class="mt-4 text-center text-muted">
+                        <i class="bi bi-shield-check"></i>
+                        Safe and Secure Payments. Easy returns.<br>
+                        100% Authentic products.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src=""{{ url_for('static', filename='js/checkout.js') }}""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

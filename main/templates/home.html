@@ -1,0 +1,183 @@
+<!-- templates/home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Threads - Modern Clothing</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+</head>
+<body>
+    <div>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-star-fill"></i> Urban Style
+                </a>
+
+                <div class="d-flex ms-auto me-3" style="width: 400px;">
+                    <form class="d-flex flex-grow-1" action="{{ url_for('search_products') }}" method="GET">
+                        <input class="form-control me-2" type="search" name="query" placeholder="Search clothing" required>
+                        <button class="btn btn-light me-2" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                    <!-- Button to open filter sidebar -->
+                    <button class="btn btn-outline-light" data-bs-toggle="offcanvas" data-bs-target="#filterSidebar">
+                        <i class="bi bi-funnel-fill"></i> Filter
+                    </button>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="home"><i class="bi bi-house-door-fill me-1"></i>Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="cart"><i class="bi bi-cart-check-fill me-1"></i>Cart</a></li>
+                        <li class="nav-item"><a class="nav-link" href="about"><i class="bi bi-telephone-fill me-1"></i>Contact</a></li>                
+                        {% if 'user_id' in session %}
+                            <li class="nav-item"><a class="nav-link" href="logout"><i class="bi bi-box-arrow-right me-1"></i>Logout</a></li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link" href="login"><i class="bi bi-person-fill me-1"></i>Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Bootstrap Offcanvas Sidebar for Filters -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="filterSidebar" style="width: 300px;">
+            <div class="filter-container">
+                <h2 class="filter-title">Filter</h2>
+            
+                <div class="filter-section">
+                    <h3 class="section-title">Type</h3>
+                    <div class="button-group">
+                        <button class="filter-button" onclick="toggleSelection(this)">Men</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">Women</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">Kids</button>
+                    </div>
+                </div>
+            
+                <div class="filter-section">
+                    <h3 class="section-title">Category</h3>
+                    <div class="button-group">
+                        <button class="filter-button" onclick="toggleSelection(this)">T-Shirts</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">Shirts</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">Pants</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">Dresses</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">Jackets</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">Shoes</button>
+                    </div>
+                </div>
+            
+                <div class="filter-section">
+                    <h3 class="section-title">Size</h3>
+                    <div class="button-group">
+                        <button class="filter-button" onclick="toggleSelection(this)">XS</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">S</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">M</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">L</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">XL</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">XXL</button>
+                    </div>
+                </div>
+            
+                <div class="filter-section">
+                    <h3 class="section-title">Brands</h3>
+                    <div class="button-group">
+                        <button class="filter-button" onclick="toggleSelection(this)">Nike</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">Adidas</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">Puma</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">Reebok</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">Under Armour</button>
+                        <button class="filter-button" onclick="toggleSelection(this)">Levi's</button>
+                    </div>
+                </div>
+            
+                <button class="filter-main-button" onclick="applyFilters()">Apply Filters</button>
+            </div>
+            
+            <script>
+                function toggleSelection(button) {
+                    button.classList.toggle("active");
+                }
+            
+                function applyFilters() {
+                    let selectedFilters = {
+                        types: [],
+                        categories: [],
+                        sizes: [],
+                        brands: []
+                    };
+            
+                    document.querySelectorAll(".filter-button.active").forEach(button => {
+                        let section = button.parentElement.previousElementSibling.innerText.toLowerCase();
+                        if (section.includes("type")) {
+                            selectedFilters.types.push(button.innerText);
+                        } else if (section.includes("category")) {
+                            selectedFilters.categories.push(button.innerText);
+                        } else if (section.includes("size")) {
+                            selectedFilters.sizes.push(button.innerText);
+                        } else if (section.includes("brands")) {
+                            selectedFilters.brands.push(button.innerText);
+                        }
+                    });
+            
+                    console.log("Applied Filters:", selectedFilters);
+                    alert("Filters applied! Check the console for selected filters.");
+                }
+            </script>
+            </div>
+    <!-- Hero Section -->
+    <section id="hero" class="text-center">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Urban Style, Timeless Comfort</h1>
+            <p class="lead mb-4">Discover the latest in fashion and personal expression</p>
+            <a href="#products" class="btn btn-light btn-lg mt-3">
+                <i class="bi bi-rocket-takeoff me-2"></i>Explore Collection
+            </a>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">
+                <i class="bi bi-bootstrap-fill me-2"></i>Featured Products
+            </h2>
+            <div class="row">
+                {% for product in products %}
+                <div class="col-md-3 mb-4">
+                    <div class="card product-card h-100">
+                        <img src="{{ url_for('static', filename='images/' + product.image) }}" class="card-img-top" alt="{{ product.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-{{ product.icon }} me-2"></i>{{ product.name }}
+                            </h5>
+                            <p class="card-text text-muted">{{ product.description }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0">₹{{ product.price }}</span>
+                                <a href="{{ url_for('uviewproduct', product_id=product.id) }}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-eye me-1"></i> View Product
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-dark text-white text-center py-4">
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

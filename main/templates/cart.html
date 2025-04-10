@@ -1,0 +1,91 @@
+{% extends "viewbase.html" %}
+
+{% block title %}Shopping Cart | Urban Style{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Your Shopping Cart</h1>
+    
+    {% if cart_items %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ item.product.image }}" alt="{{ item.product.title }}" class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                    <div>
+                                        <h5 class="mb-0">{{ item.product.title }}</h5>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>₹{{ item.product.price }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <form method="post" action="#" class="d-flex align-items-center">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary me-2">-</button>
+                                        <input type="number" class="form-control form-control-sm text-center" style="width: 60px;" value="{{ item.quantity }}" min="1">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary ms-2">+</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td class="text-end">₹{{ item.total }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold">Subtotal:</td>
+                            <td class="text-end">₹{{ total }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold">Shipping:</td>
+                            <td class="text-end">₹0.00</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold">Total:</td>
+                            <td class="text-end fw-bold">₹{{ total }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <a href="{{ url_for('home') }}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+            </a>
+        </div>
+        <div class="col-md-6 text-end">
+            <button class="btn btn-primary">
+                Proceed to Checkout<i class="bi bi-arrow-right ms-2"></i>
+            </button>
+        </div>
+    </div>
+    {% else %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-body text-center p-5">
+            <i class="bi bi-cart-x" style="font-size: 5rem; color: #ddd;"></i>
+            <h3 class="mt-4">Your cart is empty</h3>
+            <p class="text-muted mb-4">Looks like you haven't added any products to your cart yet.</p>
+            <a href="{{ url_for('home') }}" class="btn btn-primary">
+                Start Shopping
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+:root {
+    --primary-color: #6a11cb;
+    --primary-light: #eee5f9;
+}
+
+body {
+    background-color: #f8f9fa;
+}
+
+.btn-gradient {
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+    color: white;
+    border: none;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(45deg, #5a0fb0, #1e65e0);
+    color: white;
+}
+
+.checkout-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.section-box {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.section-number {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+    color: white;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.payment-option {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.price-card {
+    position: sticky;
+    top: 20px;
+}
+
+.form-section {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.form-section.active {
+    max-height: 1000px;
+}
+
+.completed-section {
+    display: none;
+}
+
+.completed-section.active {
+    display: block;
+}
+
+.product-img {
+    width: 80px;
+    height: 100px;
+    object-fit: cover;
+}

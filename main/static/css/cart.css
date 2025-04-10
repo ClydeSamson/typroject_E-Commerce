@@ -1,0 +1,60 @@
+:root {
+    --primary-color: #6a11cb;
+    --secondary-color: #2575fc;
+    --light-gray: #f4f5f7;
+}
+
+body {
+    background-color: var(--light-gray);
+    font-family: 'Arial', sans-serif;
+    padding-top: 80px;
+}
+
+.navbar {
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.cart-item-image {
+    max-width: 100px;
+    height: 150px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.cart-item {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.cart-item:hover {
+    transform: scale(1.02);
+}
+
+.cart-summary {
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    border: none;
+    transition: transform 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+.btn-remove {
+    background-color: #dc3545;
+    color: white;
+}

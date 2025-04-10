@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block title %}Remove Product - Urban Style{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Remove Products</h1>
+    
+    <!-- Alert Container -->
+    <div id="alert-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    
+    <!-- Search and Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form id="search-form" class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" id="search-input" class="form-control" placeholder="Search products...">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <select id="category-filter" class="form-select">
+                        <option value="">All Categories</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="kids">Kids</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Products Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product Name</th>
+                            <th>Gender</th>
+                            <th>Size</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-table">
+                        {% if products %}
+                            {% for product in products %}
+                            <tr>
+                                <td>{{ product.id }}</td>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.category }}</td>
+                                <td>{{ product.size }}</td>
+                                <td>₹{{ product.price }}</td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm delete-product" data-id="{{ product.id }}">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">No products found</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the search form elements
+    const searchForm = document.getElementById('search-form');
+    const searchInput = document.getElementById('search-input');
+    const categorySelect = document.getElementById('category-filter');
+    
+    // Function to fetch and display products
+    function fetchProducts() {
+        const searchTerm = searchInput.value;
+        const category = categorySelect.value;
+        
+        // Show loading indicator
+        const productTable = document.getElementById('product-table');
+        productTable.innerHTML = '<tr><td colspan="6" class="text-center">Loading...</td></tr>';
+        
+        // Fetch products from the API
+        fetch(`/api/products?search=${encodeURIComponent(searchTerm)}&category=${encodeURIComponent(category)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayProducts(data.products);
+                } else {
+                    productTable.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error: ${data.error}</td></tr>`;
+                }
+            })
+            .catch(error => {
+                productTable.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Failed to fetch products: ${error}</td></tr>`;
+            });
+    }
+    
+    // Function to display products in the table
+    function displayProducts(products) {
+        const productTable = document.getElementById('product-table');
+        
+        if (products.length === 0) {
+            productTable.innerHTML = '<tr><td colspan="6" class="text-center">No products found</td></tr>';
+            return;
+        }
+        
+        let html = '';
+        products.forEach(product => {
+            html += `
+            <tr>
+                <td>${product.id}</td>
+                <td>${product.name}</td>
+                <td>${product.category}</td>
+                <td>${product.size}</td>
+                <td>₹${product.price}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm delete-product" data-id="${product.id}">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+            `;
+        });
+        
+        productTable.innerHTML = html;
+        
+        // Add event listeners to delete buttons
+        document.querySelectorAll('.delete-product').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-id');
+                if (confirm('Are you sure you want to delete this product?')) {
+                    deleteProduct(productId);
+                }
+            });
+        });
+    }
+    
+    // Function to delete a product
+    function deleteProduct(productId) {
+        fetch(`/api/delete_product/${productId}`, {
+            method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                const alertContainer = document.getElementById('alert-container');
+                alertContainer.innerHTML = `
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        ${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                
+                // Refresh the product list
+                fetchProducts();
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            alert(`Error: ${error}`);
+        });
+    }
+    
+    // Add event listener to search form
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetchProducts();
+        });
+    }
+    
+    // Add event listener to category filter
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            fetchProducts();
+        });
+    }
+    
+    // Load products when the page loads
+    fetchProducts();
+});
+
+</script>
+{% endblock %}
