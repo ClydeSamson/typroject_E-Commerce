@@ -1,0 +1,48 @@
+/* static/css/styles.css */
+:root {
+    --primary: #4361ee;
+    --secondary: #3f37c9;
+}
+
+body {
+    background-color: #f4f6f9;
+}
+
+.complaints-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 30px;
+    margin-top: 30px;
+}
+
+.complaint-header {
+    background-color: var(--primary);
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.table-responsive {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.table thead {
+    position: sticky;
+    top: 0;
+    background-color: var(--secondary);
+    color: white;
+    z-index: 10;
+}
+
+.btn-view {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn-view:hover {
+    background-color: var(--secondary);
+    color: white;
+}

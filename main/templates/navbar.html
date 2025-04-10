@@ -1,0 +1,172 @@
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="bi bi-star-fill"></i> Urban Style
+        </a>
+
+        <div class="d-flex ms-auto me-3" style="width: 400px;">
+            <form class="d-flex flex-grow-1" action="{{ url_for('search_products') }}" method="GET">
+                <input class="form-control me-2" type="search" name="query" placeholder="Search clothing" required>
+                <button class="btn btn-light me-2" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form> 
+            <!-- Button to open filter sidebar -->
+            <button class="btn btn-outline-light" data-bs-toggle="offcanvas" data-bs-target="#filterSidebar">
+                <i class="bi bi-funnel-fill"></i> Filter
+            </button>
+        </div>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}"><i class="bi bi-house-door-fill me-1"></i>Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('cart') }}"><i class="bi bi-cart-check-fill me-1"></i>Cart</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('about') }}"><i class="bi bi-telephone-fill me-1"></i>AboutUs</a></li>                
+                {% if 'user_id' in session %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-1"></i>Logout</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}"><i class="bi bi-person-fill me-1"></i>Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Filter Sidebar -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="filterSidebar" style="width: 300px;">
+    <div class="filter-container">
+        <h2 class="filter-title">Filter</h2>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" style="position: absolute; top: 20px; right: 20px;"></button>
+    
+        <div class="filter-section">
+            <h3 class="section-title">Type</h3>
+            <div class="button-group">
+                <button class="filter-button" onclick="toggleSelection(this)">Men</button>
+                <button class="filter-button" onclick="toggleSelection(this)">Women</button>
+                <button class="filter-button" onclick="toggleSelection(this)">Kids</button>
+            </div>
+        </div>
+    
+        <div class="filter-section">
+            <h3 class="section-title">Category</h3>
+            <div class="button-group">
+                <button class="filter-button" onclick="toggleSelection(this)">T-Shirts</button>
+                <button class="filter-button" onclick="toggleSelection(this)">Pants</button>
+                <button class="filter-button" onclick="toggleSelection(this)">Hoodies</button>
+                <button class="filter-button" onclick="toggleSelection(this)">Shoes</button>
+            </div>
+        </div>
+    
+        <div class="filter-section">
+            <h3 class="section-title">Size</h3>
+            <div class="button-group">
+                <button class="filter-button" onclick="toggleSelection(this)">S</button>
+                <button class="filter-button" onclick="toggleSelection(this)">M</button>
+                <button class="filter-button" onclick="toggleSelection(this)">L</button>
+                <button class="filter-button" onclick="toggleSelection(this)">XL</button>
+                <button class="filter-button" onclick="toggleSelection(this)">XXL</button>
+            </div>
+        </div>
+    
+        <div class="filter-section">
+            <h3 class="section-title">Brands</h3>
+            <div class="button-group">
+                <button class="filter-button" onclick="toggleSelection(this)">Nike</button>
+                <button class="filter-button" onclick="toggleSelection(this)">Adidas</button>
+                <button class="filter-button" onclick="toggleSelection(this)">Puma</button>
+                <button class="filter-button" onclick="toggleSelection(this)">H&M</button>
+                <button class="filter-button" onclick="toggleSelection(this)">Levi's</button>
+            </div>
+        </div>
+    
+        <button class="filter-main-button" onclick="applyFilters()">Apply Filters</button>
+    </div>
+</div>
+<script>
+function toggleSelection(button) {
+    // Toggle 'active' class to highlight selected filters
+    button.classList.toggle('active');
+}
+
+function applyFilters() {
+    const activeTypeFilters = document.querySelectorAll('.filter-section:nth-child(1) .filter-button.active');
+    const activeCategoryFilters = document.querySelectorAll('.filter-section:nth-child(2) .filter-button.active');
+    const activeSizeFilters = document.querySelectorAll('.filter-section:nth-child(3) .filter-button.active');
+    const activeBrandFilters = document.querySelectorAll('.filter-section:nth-child(4) .filter-button.active');
+
+    const selectedTypes = Array.from(activeTypeFilters).map(btn => btn.textContent);
+    const selectedCategories = Array.from(activeCategoryFilters).map(btn => btn.textContent);
+    const selectedSizes = Array.from(activeSizeFilters).map(btn => btn.textContent);
+    const selectedBrands = Array.from(activeBrandFilters).map(btn => btn.textContent);
+
+    // Construct query parameters for GET request
+    const queryParams = new URLSearchParams();
+    if (selectedTypes.length) queryParams.append('types', selectedTypes.join(','));
+    if (selectedCategories.length) queryParams.append('categories', selectedCategories.join(','));
+    if (selectedSizes.length) queryParams.append('sizes', selectedSizes.join(','));
+    if (selectedBrands.length) queryParams.append('brands', selectedBrands.join(','));
+
+    // Redirect to the filtered products page
+    window.location.href = `/filtered_products?${queryParams.toString()}`;
+
+    // You would typically send these filters to your backend or update the product list
+    console.log('Applied Filters:', filters);
+
+    // Close the offcanvas after applying filters
+    const filterSidebar = bootstrap.Offcanvas.getInstance(document.getElementById('filterSidebar'));
+    if (filterSidebar) {
+        filterSidebar.hide();
+    }
+
+    // Example of how you might use the filters (replace with your actual filtering logic)
+    filterProducts(filters);
+}
+
+function filterProducts(filters) {
+    // This is a placeholder function - replace with actual product filtering logic
+    // For example, you might make an AJAX call to your backend with these filters
+    alert('Filtering products with: ' + JSON.stringify(filters));
+}
+</script>
+<style>
+    .navbar {
+        background-color: #212529;
+        padding: 15px 0;
+        transition: all 0.3s ease;
+    }
+    
+    .navbar-brand {
+        font-weight: bold;
+        font-size: 22px;
+    }
+    
+    .navbar .bi {
+        font-size: 1.1rem;
+    }
+    
+    .navbar-dark .navbar-nav .nav-link {
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        transition: color 0.2s ease;
+    }
+    
+    .navbar-dark .navbar-nav .nav-link:hover {
+        color: #fff;
+    }
+    
+    @media (max-width: 991.98px) {
+        .navbar-collapse {
+            margin-top: 15px;
+        }
+        
+        .d-flex.ms-auto.me-3 {
+            width: 100% !important;
+            margin: 10px 0;
+        }
+    }
+</style>

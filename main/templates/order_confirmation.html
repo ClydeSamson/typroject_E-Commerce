@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - TyProject</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .confirmation-container {
+            max-width: 800px;
+            margin: 30px auto;
+        }
+        .section-box {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .order-header {
+            background-color: #28a745;
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 20px;
+        }
+        .product-img {
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        .delivery-info {
+            border-left: 3px solid #28a745;
+            padding-left: 15px;
+        }
+        .btn-gradient {
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            border: none;
+            color: white;
+        }
+        .btn-gradient:hover {
+            background: linear-gradient(to right, #ff6a46, #fea75c);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-container">
+        <!-- Order Confirmation Header -->
+        <div class="section-box p-0">
+            <div class="order-header">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="mb-0"><i class="bi bi-check-circle-fill me-2"></i>Order Placed Successfully</h4>
+                            <p class="mb-0">Your order has been confirmed</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <p class="mb-0">Order ID: #{{ order.id }}</p>
+                            <p class="mb-0">{{ order.date }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Details -->
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>Delivery Address</h5>
+                        <p>
+                            <strong>{{ customer.name }}</strong><br>
+                            {{ customer.street }}{% if customer.landmark %}, {{ customer.landmark }}{% endif %}<br>
+                            {{ customer.city }}, {{ customer.state }} - {{ customer.pincode }}<br>
+                            Phone: {{ customer.phone }}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="delivery-info">
+                            <h5>Delivery Information</h5>
+                            <p>Estimated delivery date: <strong>{{ delivery_date }}</strong></p>
+                            <p>Payment Method: <strong>Cash on Delivery</strong></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Product Details -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5>Order Summary</h5>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex mb-3">
+                            <img src="{{ url_for('static', filename='images/' + order.product_image) }}" alt="{{ order.product_name }}" class="product-img me-3" width="80" height="100">
+                            <div class="flex-grow-1">
+                                <h6>{{ order.product_name }}</h6>
+                                <p class="text-muted mb-1">Size: {{ order.size }}</p>
+                                <p class="text-muted mb-1">Seller: Urban Style</p>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">₹{{ order.amount }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Order Total -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between">
+                            <h5>Total Amount</h5>
+                            <h5>₹{{ order.amount }}</h5>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <a href="/" class="btn btn-gradient">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Information -->
+        <div class="section-box text-center">
+            <i class="bi bi-envelope-fill text-muted mb-2" style="font-size: 24px;"></i>
+            <p class="mb-0">A confirmation email has been sent to your registered email address.</p>
+            <p class="text-muted">If you have any questions, please contact our support team.</p>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

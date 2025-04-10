@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
 import os
@@ -14,5 +14,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
 
 from main import routes

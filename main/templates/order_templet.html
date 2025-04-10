@@ -1,0 +1,234 @@
+{% extends "order_page.html" %}
+
+{% block content %}
+<div class="container-fluid p-4">
+  <!-- Filtering and Search Bar -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <form class="row g-3">
+        <div class="col-md-3">
+          <label for="statusFilter" class="form-label">Status Filter</label>
+          <select class="form-select" id="statusFilter">
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label for="dateFilter" class="form-label">Date Filter</label>
+          <input type="date" class="form-control" id="dateFilter">
+        </div>
+        <div class="col-md-4">
+          <label for="searchOrder" class="form-label">Search</label>
+          <input type="text" class="form-control" id="searchOrder" placeholder="Order ID, Customer Email...">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button type="button" class="btn btn-primary w-100">Apply Filters</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Orders Table -->
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Orders List</h5>
+      <button class="btn btn-sm btn-outline-secondary">
+        <i class="fas fa-download me-1"></i> Export
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Product</th>
+              <th>Amount</th>
+              <th>Payment Method</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if orders %}
+              {% for order in orders %}
+                <tr>
+                  <td>#{{ order[0] }}</td>
+                  <td>{{ order[1] }}</td>
+                  <td>{{ order[2] }}</td>
+                  <td>₹{{ order[3] }}</td>
+                  <td>{{ order[4] }}</td>
+                  <td>
+                    <span class="badge bg-{{ 'success' if order[5] == 'Delivered' else 'warning' if order[5] == 'Pending' else 'info' if order[5] == 'Processing' else 'primary' if order[5] == 'Shipped' else 'danger' }}">
+                      {{ order[5] }}
+                    </span>
+                  </td>
+                  <td>{{ order[6].strftime('%d-%m-%Y') }}</td>
+                  <td>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#orderModal{{ order[0] }}">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#viewModal{{ order[0] }}">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                    
+                    <!-- Update Status Modal -->
+                    <div class="modal fade" id="orderModal{{ order[0] }}" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Update Order Status</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <form method="POST" action="{{ url_for('orders_page') }}">
+                            <div class="modal-body">
+                              <input type="hidden" name="order_id" value="{{ order[0] }}">
+                              <div class="mb-3">
+                                <label class="form-label">Order ID: #{{ order[0] }}</label>
+                              </div>
+                              <div class="mb-3">
+                                <label for="new_status" class="form-label">Status</label>
+                                <select class="form-select" name="new_status" id="new_status">
+                                  <option value="Pending" {% if order[5] == 'Pending' %}selected{% endif %}>Pending</option>
+                                  <option value="Processing" {% if order[5] == 'Processing' %}selected{% endif %}>Processing</option>
+                                  <option value="Shipped" {% if order[5] == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                  <option value="Delivered" {% if order[5] == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                  <option value="Cancelled" {% if order[5] == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <button type="submit" class="btn btn-primary">Update Status</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- View Order Modal -->
+                    <div class="modal fade" id="viewModal{{ order[0] }}" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Order Details: #{{ order[0] }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="row mb-3">
+                              <div class="col-md-6">
+                                <h6>Customer Information</h6>
+                                <p><strong>Email:</strong> {{ order[1] }}</p>
+                              </div>
+                              <div class="col-md-6">
+                                <h6>Order Information</h6>
+                                <p><strong>Status:</strong> {{ order[5] }}</p>
+                                <p><strong>Payment Method:</strong> {{ order[4] }}</p>
+                                <p><strong>Date:</strong> {{ order[6].strftime('%d-%m-%Y %H:%M:%S') }}</p>
+                              </div>
+                            </div>
+                            <h6>Product Information</h6>
+                            <div class="table-responsive">
+                              <table class="table table-sm">
+                                <thead>
+                                  <tr>
+                                    <th>Product</th>
+                                    <th>Amount</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td>{{ order[2] }}</td>
+                                    <td>₹{{ order[3] }}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="8" class="text-center">No orders found</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Filter functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const statusFilter = document.getElementById('statusFilter');
+    const dateFilter = document.getElementById('dateFilter');
+    const searchInput = document.getElementById('searchOrder');
+    const applyButton = document.querySelector('.btn-primary');
+    
+    applyButton.addEventListener('click', function() {
+      const rows = document.querySelectorAll('tbody tr');
+      
+      rows.forEach(row => {
+        let showRow = true;
+        
+        // Status filter
+        if (statusFilter.value && row.querySelector('td:nth-child(6)').textContent.trim() !== statusFilter.value) {
+          showRow = false;
+        }
+        
+        // Date filter
+        if (dateFilter.value) {
+          const orderDate = new Date(row.querySelector('td:nth-child(7)').textContent.trim());
+          const filterDate = new Date(dateFilter.value);
+          
+          if (orderDate.toDateString() !== filterDate.toDateString()) {
+            showRow = false;
+          }
+        }
+        
+        // Search filter
+        if (searchInput.value) {
+          const searchTerm = searchInput.value.toLowerCase();
+          const orderId = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+          const customer = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+          
+          if (!orderId.includes(searchTerm) && !customer.includes(searchTerm)) {
+            showRow = false;
+          }
+        }
+        
+        row.style.display = showRow ? '' : 'none';
+      });
+    });
+  });
+</script>
+{% endblock %}

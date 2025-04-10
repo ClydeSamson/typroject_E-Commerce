@@ -18,8 +18,7 @@
                         <span class="section-number">1</span>
                         <h5 class="mb-0">DELIVERY ADDRESS</h5>
                     </div>
-
-                    <div class="form-section active" id="addressForm">
+                        <!-- Delivery Address Form Section -->
                         <form class="row g-3" id="deliveryForm">
                             <div class="col-12">
                                 <label class="form-label">Name</label>
@@ -53,8 +52,8 @@
                                 <button type="submit" class="btn btn-gradient">SAVE AND DELIVER HERE</button>
                             </div>
                         </form>
-                    </div>
-
+                    
+                    <!-- Completed Address Section (initially hidden) -->
                     <div class="completed-section" id="addressCompleted">
                         <div id="addressValue"></div>
                         <button class="btn btn-link float-end" onclick="editAddress()">CHANGE</button>
@@ -67,31 +66,33 @@
                         <span class="section-number">2</span>
                         <h5 class="mb-0">ORDER SUMMARY</h5>
                     </div>
+                    {% for product in products %}
                     <div class="d-flex mb-3">
-                        <img src="{{ url_for('static', filename='img/placeholder.jpg') }}" alt="Product" class="product-img me-3" width="80" height="100">
+                        <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" class="product-img me-3" width="80" height="100">
                         <div class="flex-grow-1">
                             <h6>{{ product.name }}</h6>
                             <p class="text-muted mb-1">Size: {{ product.size }}</p>
                             <p class="text-muted mb-1">Seller: {{ product.seller }}</p>
-                            <div class="d-flex align-items-center">
-                                <strong>₹{{ product.price }}</strong>
-                                <span class="text-success ms-2">{{ product.discount }}% Off</span>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <strong>₹{{ product.price }}</strong>
+                                    <span class="text-success ms-2">{{ product.discount }}% Off</span>
+                                </div>
+                                <div>
+                                    <span>Qty: {{ product.quantity }}</span>
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <button class="btn btn-link text-danger">REMOVE</button>
-                        </div>
                     </div>
+                    {% if not loop.last %}
+                    <hr>
+                    {% endif %}
+                    {% endfor %}
                 </div>
-
-                <!-- Payment Options Section -->
                 <div class="section-box">
                     <div class="section-header">
                         <span class="section-number">3</span>
                         <h5 class="mb-0">PAYMENT OPTIONS</h5>
-                    </div>
-                    <div class="timer">
-                        <i class="bi bi-clock"></i> Complete payment in {{ expiry_time }}
                     </div>
                     <div class="payment-options">
                         <div class="payment-option">
@@ -101,41 +102,291 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Price Details Card -->
+            
+            <!-- Order Total Section -->
             <div class="col-md-4">
-                <div class="section-box price-card">
-                    <h5 class="mb-4">PRICE DETAILS</h5>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Price (1 item)</span>
-                        <span>₹{{ product.price }}</span>
+                <div class="section-box">
+                    <h5 class="mb-3">PRICE DETAILS</h5>
+                    <div class="price-item">
+                        <span>Price ({{ products|length }} items)</span>
+                        <span>₹{{ subtotal }}</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-2">
+                    <div class="price-item">
+                        <span>Discount</span>
+                        <span class="text-success">-₹{{ (subtotal * 0.1)|round(2) }}</span>
+                    </div>
+                    <div class="price-item">
                         <span>Delivery Charges</span>
-                        <span class="text-success">FREE</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span>Platform Fee</span>
-                        <span>₹{{ product.platform_fee }}</span>
+                        <span>{% if subtotal > 500 %}FREE{% else %}₹{{ shipping }}{% endif %}</span>
                     </div>
                     <hr>
-                    <div class="d-flex justify-content-between mb-3 fw-bold">
-                        <span>Total Payable</span>
+                    <div class="price-item total">
+                        <span>Total Amount</span>
                         <span>₹{{ total }}</span>
                     </div>
-                    <div class="text-success">
-                        Your Total Savings on this order ₹{{ "%.2f"|format(savings) }}
+                    <div class="mt-3 text-success">
+                        <i class="bi bi-piggy-bank"></i>
+                        <span>You will save ₹{{ (subtotal * 0.1)|round(2) }} on this order</span>
                     </div>
-                    <div class="mt-4 text-center text-muted">
+                </div>
+                <div class="section-box mt-3">
+                    <div class="secure-payment">
                         <i class="bi bi-shield-check"></i>
-                        Safe and Secure Payments. Easy returns.<br>
-                        100% Authentic products.
+                        <span>Secure and trusted payments</span>
                     </div>
+                </div>
+                <div class="section-box mt-3">
+                    <button class="btn btn-gradient w-100" id="placeOrderBtn" onclick="placeOrder()">PLACE ORDER</button>
                 </div>
             </div>
         </div>
     </div>
-    <script src=""{{ url_for('static', filename='js/checkout.js') }}""></script>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variables to track form completion
+        let isAddressCompleted = false;
+        let isPaymentSelected = false;
+        let customerData = null; // Initialize as null if not provided by server
+
+        // When the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initially hide the completed address section
+            document.getElementById('addressCompleted').style.display = 'none';
+            
+            // Add event listener for the delivery form
+            document.getElementById('deliveryForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveAddress();
+            });
+            
+            // Add event listener for payment selection
+            document.querySelectorAll('input[name="payment"]').forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    isPaymentSelected = true;
+                    console.log('Payment selected:', this.id);
+                });
+            });
+            
+            // Check if there's existing customer data in localStorage or from server
+            try {
+                const storedCustomerData = localStorage.getItem('customerData');
+                if (storedCustomerData) {
+                    customerData = JSON.parse(storedCustomerData);
+                    console.log('Retrieved customer data from localStorage');
+                }
+                
+                // If customer data exists (either from localStorage or set by server)
+                if (customerData) {
+                    prefillAddressForm(customerData);
+                }
+            } catch (error) {
+                console.error('Error loading customer data:', error);
+            }
+        });
+
+        // Function to pre-fill the address form with existing data
+        function prefillAddressForm(data) {
+            console.log('Pre-filling form with data:', data);
+            
+            // Fill in the form fields
+            document.getElementById('name').value = data.name || '';
+            document.getElementById('street').value = data.street || data.address || '';
+            document.getElementById('landmark').value = data.landmark || '';
+            document.getElementById('city').value = data.city || '';
+            document.getElementById('state').value = data.state || '';
+            document.getElementById('pincode').value = data.pincode || '';
+            document.getElementById('phone').value = data.phone || '';
+            
+            // If we have all required fields, show the address as completed
+            if (data.name && (data.street || data.address) && data.city && 
+                data.state && data.pincode && data.phone) {
+                
+                const addressHtml = `
+                    <strong>${data.name}</strong><br>
+                    ${data.street || data.address}, ${data.landmark ? data.landmark + ', ' : ''}${data.city},<br>
+                    ${data.state} - ${data.pincode}<br>
+                    Phone: ${data.phone}
+                `;
+                
+                // Update the address value div
+                document.getElementById('addressValue').innerHTML = addressHtml;
+                
+                // Hide the form and show the completed section
+                document.getElementById('deliveryForm').style.display = 'none';
+                document.getElementById('addressCompleted').style.display = 'block';
+                
+                // Mark address as completed
+                isAddressCompleted = true;
+            }
+        }
+
+        // Function to save the address and show the completed section
+        function saveAddress() {
+            // Get form values
+            const name = document.getElementById('name').value.trim();
+            const street = document.getElementById('street').value.trim();
+            const landmark = document.getElementById('landmark').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const state = document.getElementById('state').value.trim();
+            const pincode = document.getElementById('pincode').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            
+            // Form validation
+            if (!name || !street || !city || !state || !pincode || !phone) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Add simple phone number validation
+            const phoneRegex = /^\d{10}$/;
+            if (!phoneRegex.test(phone)) {
+                alert('Please enter a valid 10-digit phone number');
+                return;
+            }
+
+            // Add simple pincode validation
+            const pincodeRegex = /^\d{6}$/;
+            if (!pincodeRegex.test(pincode)) {
+                alert('Please enter a valid 6-digit PIN code');
+                return;
+            }
+            
+            // Create address data object
+            const addressData = {
+                name: name,
+                street: street,
+                address: street, // Include both for compatibility
+                landmark: landmark,
+                city: city,
+                state: state,
+                pincode: pincode,
+                phone: phone
+            };
+            
+            // Save to localStorage for persistence
+            try {
+                localStorage.setItem('customerData', JSON.stringify(addressData));
+            } catch (error) {
+                console.warn('Unable to save to localStorage:', error);
+            }
+            
+            // Send data to server
+            fetch('/save_address', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(addressData),
+                credentials: 'same-origin' // Include cookies
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    // Create address string for display
+                    const addressHtml = `
+                        <strong>${name}</strong><br>
+                        ${street}, ${landmark ? landmark + ', ' : ''}${city},<br>
+                        ${state} - ${pincode}<br>
+                        Phone: ${phone}
+                    `;
+                    
+                    // Update the address value div
+                    document.getElementById('addressValue').innerHTML = addressHtml;
+                    
+                    // Hide the form and show the completed section
+                    document.getElementById('deliveryForm').style.display = 'none';
+                    document.getElementById('addressCompleted').style.display = 'block';
+                    
+                    // Mark address as completed
+                    isAddressCompleted = true;
+                    
+                    console.log('Address saved successfully');
+                } else {
+                    alert('Failed to save address: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error saving address:', error);
+                
+                // Even if server fails, show the address as completed for UX
+                // This allows customer to proceed with the order
+                const addressHtml = `
+                    <strong>${name}</strong><br>
+                    ${street}, ${landmark ? landmark + ', ' : ''}${city},<br>
+                    ${state} - ${pincode}<br>
+                    Phone: ${phone}
+                `;
+                
+                document.getElementById('addressValue').innerHTML = addressHtml;
+                document.getElementById('deliveryForm').style.display = 'none';
+                document.getElementById('addressCompleted').style.display = 'block';
+                isAddressCompleted = true;
+                
+                console.log('Address marked as completed despite server error');
+            });
+        }
+
+        // Function to edit the address
+        function editAddress() {
+            // Show the form and hide the completed section
+            document.getElementById('deliveryForm').style.display = 'block';
+            document.getElementById('addressCompleted').style.display = 'none';
+            
+            // Keep isAddressCompleted true since we still have the data
+            // Will be revalidated when user submits the form again
+        }
+
+        function placeOrder() {
+    // Collect all products from the page
+    const products = [
+        {% for product in products %}
+        {
+            product_id: '{{ product.id }}',
+            amount: {{ product.price }},
+            quantity: {{ product.quantity }}
+        },
+        {% endfor %}
+    ];
+
+    const orderData = {
+        products: products,
+        total_amount: {{ total }},
+        payment_method: document.querySelector('input[name="payment"]:checked')?.id || 'COD'
+    };
+
+    fetch('/place_order', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.order_ids && data.order_ids.length > 0) {
+            console.log('Order IDs:', data.order_ids);
+            
+            // If multiple orders, redirect to first order confirmation
+            // or create a multi-order confirmation page
+            window.location.href = `/order_confirmation/${data.order_ids[0]}`;
+        } else {
+            console.error('Order placement response:', data);
+            alert(data.message || 'Order placement failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while placing your order');
+    });
+}
+    </script>
 </body>
 </html>

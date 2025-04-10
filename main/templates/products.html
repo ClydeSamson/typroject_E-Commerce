@@ -29,6 +29,13 @@
         body {
             background-color: #f5f5f5;
         }
+        .product-row {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .product-row:hover {
+            background-color: #f1f3f5;
+        }
     </style>
 </head>
 <body>
@@ -69,15 +76,15 @@
                         </thead>
                         <tbody>
                             {% for product in products %}
-                            <tr>
+                            <tr class="product-row" onclick="window.location.href='{{ url_for('uviewproduct', product_id=product.pid) }}'">
                                 <td>
-                                    <!-- Try both static and dynamic image paths -->
-                                    {% if product.image_path and product.image_path.startswith('/static') or product.image_path.startswith('static') %}
-                                        <img src="{{ product.image_path }}" alt="{{ product.pname }}" class="product-image">
-                                    {% else %}
+                                    {% if product.image %}
                                         <img src="{{ url_for('serve_product_image', product_id=product.pid) }}" alt="{{ product.pname }}" class="product-image">
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='images/default.png') }}" alt="No Image" class="product-image">
                                     {% endif %}
                                 </td>
+                                
                                 <td>{{ product.pid }}</td>
                                 <td>{{ product.pname }}</td>
                                 <td>{{ product.category }}</td>

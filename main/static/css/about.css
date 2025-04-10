@@ -6,7 +6,7 @@ body {
 
 /* Navbar */
 .navbar {
-    background-color: #343a40;
+    background-color: #6a11cb;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -17,13 +17,13 @@ body {
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), url('/static/img/hero-bg.jpg');
+    background: linear-gradient(#6a11cb, #2575fc), url('/static/img/hero-bg.jpg');
     background-size: cover;
     background-position: center;
     color: white;
     padding: 100px 0;
     margin-bottom: 30px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 2px 2px 4px rgba(14, 11, 219, 0.5);
 }
 
 /* Stats Section */
@@ -49,7 +49,8 @@ body {
 
 /* Mission Box */
 .mission-box {
-    background-color: #f8f9fa;
+    background-color: #6a11cb;
+    color: #dee2e6;
     padding: 60px 0;
     border-top: 1px solid #dee2e6;
     border-bottom: 1px solid #dee2e6;
@@ -74,14 +75,14 @@ body {
 }
 
 .btn-submit {
-    background-color: #343a40;
+    background-color:#6a11cb;
     color: white;
     border: none;
     transition: background-color 0.3s;
 }
 
 .btn-submit:hover {
-    background-color: #495057;
+    background-color: #2575fc;
     color: white;
 }
 
