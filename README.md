@@ -22,6 +22,26 @@ A smart e-commerce web application built with predictive analytics and machine l
 
 ---
 
+## 🔗 Libraries Used
+
+- Flask
+- Flask-WTF
+- WTForms
+- Werkzeug
+- psycopg2 (for PostgreSQL connection)
+- pandas
+- scikit-learn
+- pickle
+- re, difflib, os
+- TfidfVectorizer, LabelEncoder, GradientBoostingClassifier, RandomForestClassifier
+- cosine_similarity (from sklearn.metrics.pairwise)
+
+> ⚠️ Make sure to install them via:
+
+pip install -r requirements.txt
+
+---
+
 ## 📦 Installation
 
 ### 🐘 Install PostgreSQL
@@ -35,7 +55,6 @@ Create a new database and user, and update the connection string in your Flask c
 
 ### 🔧 Set Up the Project
 
-```bash
 git clone https://github.com/ClydeSamson/typroject_E-Commerce.git
 cd typroject_E-Commerce
 pip install -r requirements.txt
